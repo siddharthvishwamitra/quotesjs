@@ -232,3 +232,21 @@ button:hover {
     line-height: 18px;
   }
 }
+
+.recent-img-title {
+  background-color: #272727;
+  text-align: left;
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 5px;
+  display: none;
+}
+
+.premade-img-title {
+background-color: #272727;
+text-align: left;
+color: #ffffff;
+padding: 10px;
+border-radius: 5px;
+margin-top: 12px;
+}

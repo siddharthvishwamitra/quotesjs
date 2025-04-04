@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quotes Creator</title>
     <link rel="stylesheet" href="/assets/style/main.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <link rel="stylesheet" href="/assets/style/cropper.min.css">
 </head>
 <body>
 <header>
@@ -17,12 +17,16 @@
     <div class="container">
         <div id="imageSelect">
             <input type="file" id="uploadImage" accept="image/*">
+          <h3 class="premade-img-title">Premade Images</h3>
             <div class="image-options" id="defaultImages">
                 <img src="assets/images/1.jpg" onclick="openEditor(this.src)">
                 <img src="assets/images/2.jpg" onclick="openEditor(this.src)">
                 <img src="assets/images/3.jpg" onclick="openEditor(this.src)">
+                <img src="assets/images/4.jpg" onclick="openEditor(this.src)">
+                <img src="assets/images/5.jpg" onclick="openEditor(this.src)">
+                <img src="assets/images/6.jpg" onclick="openEditor(this.src)">
             </div>
-            <h3 id="recentTitle" style="display:none;">Recent Uploads</h3>
+            <h3 id="recentTitle" class="recent-img-title">Recent Uploads</h3>
             <div class="image-options" id="recentImages"></div>
         </div>
 
@@ -72,7 +76,7 @@
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script src="/assets/js/cropper.min.js"></script>
 <script src="/assets/js/main.js"></script>
 </body>
 </html>
