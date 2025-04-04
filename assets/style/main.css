@@ -16,6 +16,11 @@ body {
   padding: 0;
 }
 
+a {
+  text-decoration: none;
+  color: #ffffff;
+}
+
 header {
   display: flex;
   align-items: center;

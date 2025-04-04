@@ -9,7 +9,7 @@
 </head>
 <body>
 <header>
-  <h1>Quotes Creator</h1>
+<a href="javascript:void(0)" onclick="goHome()"><h1>Quotes Creator</h1></a>
   <a class="link" href="https://GitHub.com/siddharthvishwamitra/quotesjs">GitHub</a>
 </header>
 
@@ -78,5 +78,12 @@
 
 <script src="/assets/js/cropper.min.js"></script>
 <script src="/assets/js/main.js"></script>
+<script>
+function goHome() {
+  if (window.location.pathname !== "/" || window.location.search) {
+    window.location.replace("/");
+  }
+}
+</script>
 </body>
 </html>
