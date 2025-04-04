@@ -100,18 +100,25 @@ function updateCanvas() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   
   let text = document.getElementById("quoteText").value || currentSettings.text;
-  let size = document.getElementById("textSize").value || currentSettings.textSize;
+  let size = parseInt(document.getElementById("textSize").value || currentSettings.textSize);
   let color = document.getElementById("textColor").value || currentSettings.textColor;
   let outlineColor = document.getElementById("outlineColor").value || currentSettings.outlineColor;
-  let outlineSize = document.getElementById("outlineSize").value || currentSettings.outlineSize;
+  let outlineSize = parseInt(document.getElementById("outlineSize").value || currentSettings.outlineSize);
   let textAlign = document.getElementById("textAlign").value || currentSettings.textAlign;
   
   ctx.font = `${size}px Arial`;
   ctx.fillStyle = color;
   ctx.textAlign = textAlign;
+  ctx.textBaseline = "middle";
   
-  let x = textAlign === "left" ? 50 : textAlign === "right" ? canvas.width - 50 : canvas.width / 2;
-  wrapText(ctx, text, x, canvas.height / 2, 500, size * 1.2, outlineSize, outlineColor);
+  // Dynamically calculate max width based on canvas width with padding
+  let padding = 40;
+  let maxWidth = canvas.width - padding * 2;
+  
+  // Determine x position based on alignment
+  let x = textAlign === "left" ? padding : textAlign === "right" ? canvas.width - padding : canvas.width / 2;
+  
+  wrapText(ctx, text, x, canvas.height / 2, maxWidth, size * 1.4, outlineSize, outlineColor);
 }
 
 function wrapText(ctx, text, x, y, maxWidth, lineHeight, outlineSize, outlineColor) {
@@ -124,8 +131,9 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight, outlineSize, outlineCol
     
     words.forEach((word) => {
       let testLine = tempLine + word + " ";
-      let metrics = ctx.measureText(testLine);
-      if (metrics.width > maxWidth && tempLine.length > 0) {
+      let testWidth = ctx.measureText(testLine).width;
+      
+      if (testWidth > maxWidth && tempLine.length > 0) {
         wrappedLines.push(tempLine.trim());
         tempLine = word + " ";
       } else {
@@ -136,14 +144,19 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight, outlineSize, outlineCol
     wrappedLines.push(tempLine.trim());
   });
   
-  let startY = y - ((wrappedLines.length - 1) * lineHeight) / 2;
-  wrappedLines.forEach((line, i) => {
-    let lineY = startY + i * lineHeight;
+  // Center vertically
+  let totalHeight = wrappedLines.length * lineHeight;
+  let startY = y - totalHeight / 2 + lineHeight / 2;
+  
+  wrappedLines.forEach((line, index) => {
+    let lineY = startY + index * lineHeight;
+    
     if (outlineSize > 0 && outlineColor !== "none") {
-      ctx.strokeStyle = outlineColor;
       ctx.lineWidth = outlineSize;
+      ctx.strokeStyle = outlineColor;
       ctx.strokeText(line, x, lineY);
     }
+    
     ctx.fillText(line, x, lineY);
   });
 }
