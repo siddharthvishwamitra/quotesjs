@@ -269,3 +269,11 @@ input[type="file"] {
 .custom-file-upload:hover {
   background: #e8e8e8;
 }
+
+.no-js-message {
+  background: #ffdddd;
+  color: #900;
+  padding: 1em;
+  text-align: center;
+  font-weight: bold;
+}
