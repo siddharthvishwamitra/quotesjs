@@ -16,6 +16,58 @@ let currentSettings = {
   overlayOpacity: "0.5"
 };
 
+// IndexedDB Setup
+const DB_NAME = "QuoteCreatorDB";
+const DB_VERSION = 1;
+const STORE_NAME = "recentImages";
+
+function openDB(callback) {
+  const request = indexedDB.open(DB_NAME, DB_VERSION);
+  request.onupgradeneeded = function(e) {
+    const db = e.target.result;
+    if (!db.objectStoreNames.contains(STORE_NAME)) {
+      db.createObjectStore(STORE_NAME, { keyPath: "id" });
+    }
+  };
+  request.onsuccess = function(e) {
+    callback(e.target.result);
+  };
+  request.onerror = function(e) {
+    console.error("IndexedDB error:", e.target.errorCode);
+  };
+}
+
+function saveRecentImageIndexedDB(id, src) {
+  openDB((db) => {
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    const store = tx.objectStore(STORE_NAME);
+    store.put({ id, src });
+    tx.oncomplete = () => db.close();
+  });
+}
+
+function loadRecentFromIndexedDB() {
+  openDB((db) => {
+    const tx = db.transaction(STORE_NAME, "readonly");
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.getAll();
+    request.onsuccess = function() {
+      request.result.forEach((item) => addRecentImage(item.src, item.id));
+      db.close();
+    };
+  });
+}
+
+function deleteRecentFromIndexedDB(id) {
+  openDB((db) => {
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    const store = tx.objectStore(STORE_NAME);
+    store.delete(id);
+    tx.oncomplete = () => db.close();
+  });
+}
+
+// Upload & Cropper
 document.getElementById("uploadImage").addEventListener("change", function(event) {
   let file = event.target.files[0];
   if (file) {
@@ -42,8 +94,9 @@ function openCropper(imageSrc) {
 function cropImage() {
   let croppedCanvas = cropper.getCroppedCanvas();
   let croppedImage = croppedCanvas.toDataURL("image/png");
-  
-  addRecentImage(croppedImage);
+  let id = Date.now().toString();
+  saveRecentImageIndexedDB(id, croppedImage);
+  addRecentImage(croppedImage, id);
   closeCropper();
 }
 
@@ -51,6 +104,7 @@ function closeCropper() {
   document.getElementById("cropContainer").style.display = "none";
 }
 
+// Editor Functions
 function openEditor(src) {
   document.getElementById("imageSelect").style.display = "none";
   document.getElementById("editor").style.display = "flex";
@@ -59,10 +113,8 @@ function openEditor(src) {
   img.onload = () => {
     originalWidth = img.width;
     originalHeight = img.height;
-    
     canvas.width = originalWidth;
     canvas.height = originalHeight;
-    
     updateCanvas();
   };
   img.src = src;
@@ -85,7 +137,7 @@ function updateCanvas() {
   let outlineSize = parseInt(document.getElementById("outlineSize").value || currentSettings.outlineSize);
   let textAlign = document.getElementById("textAlign").value || currentSettings.textAlign;
   
-  let scale = canvas.width / 1000; // scale based on 1000px baseline
+  let scale = canvas.width / 1000;
   let fontSize = baseSize * scale;
   let lineHeight = fontSize * 1.2;
   let maxWidth = canvas.width * 0.9;
@@ -154,18 +206,8 @@ window.addEventListener("popstate", function(event) {
   }
 });
 
-// LOCAL STORAGE HANDLING
-function saveRecentToLocalStorage() {
-  let images = Array.from(document.querySelectorAll("#recentImages img")).map(img => img.src);
-  localStorage.setItem("recentUploads", JSON.stringify(images));
-}
-
-function loadRecentFromLocalStorage() {
-  let images = JSON.parse(localStorage.getItem("recentUploads") || "[]");
-  images.forEach(src => addRecentImage(src));
-}
-
-function addRecentImage(src) {
+// UI: Recent Section
+function addRecentImage(src, id) {
   let recentContainer = document.getElementById("recentImages");
   if ([...recentContainer.querySelectorAll("img")].some(i => i.src === src)) return;
   
@@ -181,7 +223,7 @@ function addRecentImage(src) {
   deleteBtn.innerHTML = "×";
   deleteBtn.onclick = () => {
     imageDiv.remove();
-    saveRecentToLocalStorage();
+    if (id) deleteRecentFromIndexedDB(id);
     checkRecentVisibility();
   };
   
@@ -189,7 +231,6 @@ function addRecentImage(src) {
   imageDiv.appendChild(deleteBtn);
   recentContainer.appendChild(imageDiv);
   checkRecentVisibility();
-  saveRecentToLocalStorage();
 }
 
 function checkRecentVisibility() {
@@ -198,4 +239,4 @@ function checkRecentVisibility() {
   recentTitle.style.display = recentContainer.children.length > 0 ? "block" : "none";
 }
 
-window.addEventListener("DOMContentLoaded", loadRecentFromLocalStorage);
+window.addEventListener("DOMContentLoaded", loadRecentFromIndexedDB);
