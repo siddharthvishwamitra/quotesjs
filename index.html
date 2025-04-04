@@ -17,7 +17,7 @@
         <div id="imageSelect">
           <label for="uploadImage" class="custom-file-upload">Upload Image</label>
             <input type="file" id="uploadImage" accept="image/*">
-          <h3 class="premade-img-title">Premade Images</h3>
+          <h3 class="premade-img-title">Default Images</h3>
             <div class="image-options" id="defaultImages">
                 <img src="assets/images/1.jpg" onclick="openEditor(this.src)">
                 <img src="assets/images/2.jpg" onclick="openEditor(this.src)">
@@ -26,7 +26,7 @@
                 <img src="assets/images/5.jpg" onclick="openEditor(this.src)">
                 <img src="assets/images/6.jpg" onclick="openEditor(this.src)">
             </div>
-            <h3 id="recentTitle" class="recent-img-title">Recent Uploads</h3>
+            <h3 id="recentTitle" class="recent-img-title">Your Images</h3>
             <div class="image-options" id="recentImages"></div>
         </div>
 
@@ -85,5 +85,6 @@ function goHome() {
   }
 }
 </script>
+<script src="assets/js/safety.js"></script>
 </body>
 </html>

@@ -57,7 +57,7 @@ header .link {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  gap: 5px;
 }
 
 .image-options img {
@@ -79,8 +79,7 @@ header .link {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
-  padding: 10px;
+  gap: 5px;
 }
 
 .image-item {
@@ -226,8 +225,8 @@ button:hover {
   }
 
   .image-item {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
   }
 
   .delete-icon {
