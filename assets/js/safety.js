@@ -11,25 +11,37 @@ class InteractionProtector {
     if (!el) return;
 
     // Disable context menu
-    el.addEventListener("contextmenu", (e) => e.preventDefault());
+    el.addEventListener("contextmenu", (e) => {
+      if (!this._isEditableElement(e.target)) e.preventDefault();
+    });
 
     // Disable selection
     el.style.userSelect = "none";
-    el.addEventListener("selectstart", (e) => e.preventDefault());
-
-    // Disable dragging
-    el.addEventListener("dragstart", (e) => e.preventDefault());
-
-    // Disable copy/cut/paste
-    ["copy", "cut", "paste"].forEach((evt) => {
-      el.addEventListener(evt, (e) => e.preventDefault());
+    el.addEventListener("selectstart", (e) => {
+      if (!this._isEditableElement(e.target)) e.preventDefault();
     });
 
-    // Optional: Enable long press to copy image
+    // Disable dragging
+    el.addEventListener("dragstart", (e) => {
+      if (!this._isEditableElement(e.target)) e.preventDefault();
+    });
+
+    // Disable copy/cut/paste outside input/textarea
+    ["copy", "cut", "paste"].forEach((evt) => {
+      el.addEventListener(evt, (e) => {
+        if (!this._isEditableElement(e.target)) e.preventDefault();
+      });
+    });
+
+    // Enable long press to copy image (optional)
     if (this.enableImageCopy) {
       const images = el.querySelectorAll("img");
       images.forEach((img) => this._addLongPressCopy(img));
     }
+  }
+
+  _isEditableElement(el) {
+    return el.tagName === "TEXTAREA" || (el.tagName === "INPUT" && !el.readOnly && !el.disabled);
   }
 
   _addLongPressCopy(imgEl) {
@@ -60,10 +72,10 @@ class InteractionProtector {
   }
 }
 
-// Usage:
+// Usage
 document.addEventListener("DOMContentLoaded", () => {
   new InteractionProtector({
-    selector: "body",          // Whole page
-    enableImageCopy: true      // Long press to copy images (optional)
+    selector: "body",
+    enableImageCopy: true
   });
 });
