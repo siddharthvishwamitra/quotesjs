@@ -169,3 +169,44 @@ window.addEventListener("popstate", function(event) {
     resetEditor();
   }
 });
+
+function saveRecentToLocalStorage() {
+  let images = Array.from(document.querySelectorAll("#recentImages img")).map(img => img.src);
+  localStorage.setItem("recentUploads", JSON.stringify(images));
+}
+
+function loadRecentFromLocalStorage() {
+  let images = JSON.parse(localStorage.getItem("recentUploads") || "[]");
+  images.forEach(src => addRecentImage(src));
+}
+
+function addRecentImage(src) {
+  let recentContainer = document.getElementById("recentImages");
+  
+  // Avoid duplicate
+  if ([...recentContainer.querySelectorAll("img")].some(i => i.src === src)) return;
+  
+  let imageDiv = document.createElement("div");
+  imageDiv.classList.add("image-item");
+  
+  let img = document.createElement("img");
+  img.src = src;
+  img.onclick = () => openEditor(src);
+  
+  let deleteBtn = document.createElement("div");
+  deleteBtn.classList.add("delete-icon");
+  deleteBtn.innerHTML = "×";
+  deleteBtn.onclick = () => {
+    imageDiv.remove();
+    saveRecentToLocalStorage();
+    checkRecentVisibility();
+  };
+  
+  imageDiv.appendChild(img);
+  imageDiv.appendChild(deleteBtn);
+  recentContainer.appendChild(imageDiv);
+  checkRecentVisibility();
+  saveRecentToLocalStorage();
+}
+
+window.addEventListener("DOMContentLoaded", loadRecentFromLocalStorage);
