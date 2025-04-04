@@ -2,17 +2,20 @@
   font-family: 'IGSans-R';
   src: url('/assets/font/InstagramSans-Regular.ttf') format('truetype');
 }
+
 * {
-font-family: 'IGSans-R';
-margin: 0;
-padding: 0;
-box-sizing: border-box;
--webkit-tap-highlight-color: transparent;
+  font-family: 'IGSans-R';
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
+
 body {
-background-color: #f4f4f4;
-padding: 0;
+  background-color: #f4f4f4;
+  padding: 0;
 }
+
 header {
   display: flex;
   align-items: center;
@@ -21,100 +24,211 @@ header {
   color: #fff;
   padding: 15px 20px;
 }
+
 h1 {
   font-size: 22px;
   margin: 0;
 }
+
 header .link {
   text-decoration: none;
   color: #ffffff;
 }
+
 .apex-container {
-display: flex;
-justify-content: center;
-align-items: center;
-padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
+
 .container {
-width: 100%;
-max-width: 900px;
-text-align: center;
+  width: 100%;
+  max-width: 900px;
+  text-align: center;
 }
+
+.image-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
 .image-options img {
-width: 100px;
-height: 100px;
-margin: 10px;
-cursor: pointer;
-border-radius: 5px;
-transition: transform 0.2s;
+  width: 100px;
+  height: 100px;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: transform 0.2s;
+  object-fit: cover;
 }
+
 .image-options img:hover {
-transform: scale(1.1);
+  transform: scale(1.1);
 }
+
+/* Recent Images Section */
+#recentImages {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+.image-item {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 5px;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.image-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.delete-icon {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Editor Section */
 .editor {
-display: none;
-flex-direction: column;
-align-items: center;
-gap: 15px;
-width: 100%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
 }
+
 textarea {
-width: 100%;
-height: 100px;
-resize: none;
-padding: 10px;
-border: 1px solid #ccc;
-border-radius: 5px;
-font-size: 16px;
-outline: none;
+  width: 100%;
+  height: 100px;
+  resize: none;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  outline: none;
 }
+
 canvas {
-max-width: 100%;
-border-radius: 10px;
+  max-width: 100%;
+  border-radius: 10px;
 }
+
+/* Controls */
 .controls {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-gap: 10px;
-width: 100%;
-padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
 }
+
 .controls label {
-font-size: 14px;
-display: flex;
-flex-direction: column;
-align-items: center;
-background: #fff;
-padding: 8px;
-border-radius: 5px;
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  padding: 8px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 select, input {
-padding: 6px;
-font-size: 14px;
-width: 100%;
-text-align: center;
-border-radius: 5px;
-border: 1px solid #ddd;
-outline: none;
+  padding: 6px;
+  font-size: 14px;
+  width: 100%;
+  text-align: center;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  outline: none;
 }
+
 button {
-padding: 10px;
-border: none;
-background: #007BFF;
-color: white;
-border-radius: 5px;
-cursor: pointer;
-font-size: 16px;
-width: 100%;
-transition: background 0.2s;
+  padding: 10px;
+  border: none;
+  background: #007BFF;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  width: 100%;
+  transition: background 0.2s;
 }
+
 button:hover {
-background: #0056b3;
+  background: #0056b3;
 }
+
 .button-group {
-display: flex;
-gap: 10px;
-justify-content: center;
-width: 100%;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Cropper Container */
+#cropContainer {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+}
+
+#cropBox img {
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .controls {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+
+  .image-options img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .image-item {
+    width: 80px;
+    height: 80px;
+  }
+
+  .delete-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+    line-height: 18px;
+  }
 }

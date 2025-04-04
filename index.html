@@ -5,21 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quotes Creator</title>
     <link rel="stylesheet" href="/assets/style/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
 </head>
 <body>
 <header>
   <h1>Quotes Creator</h1>
   <a class="link" href="https://GitHub.com/siddharthvishwamitra/quotesjs">GitHub</a>
 </header>
+
 <div class="apex-container">
     <div class="container">
         <div id="imageSelect">
-            <h2>Select Image</h2>
-            <div class="image-options">
+            <input type="file" id="uploadImage" accept="image/*">
+            <div class="image-options" id="defaultImages">
                 <img src="assets/images/1.jpg" onclick="openEditor(this.src)">
                 <img src="assets/images/2.jpg" onclick="openEditor(this.src)">
                 <img src="assets/images/3.jpg" onclick="openEditor(this.src)">
             </div>
+            <h3 id="recentTitle" style="display:none;">Recent Uploads</h3>
+            <div class="image-options" id="recentImages"></div>
         </div>
 
         <div id="editor" class="editor">
@@ -58,7 +62,17 @@
             </div>
         </div>
     </div>
+</div>
+
+<div id="cropContainer" style="display: none;">
+    <div id="cropBox">
+        <img id="cropImage">
+        <button onclick="cropImage()">Crop</button>
+        <button onclick="closeCropper()">Cancel</button>
     </div>
-    <script src="/assets/js/main.js"></script>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script src="/assets/js/main.js"></script>
 </body>
 </html>
