@@ -1,143 +1,137 @@
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let img = new Image();
-let cropper;
+let customFont = new FontFace('IGSans-R', 'url(/assets/font/InstagramSans-Regular.ttf)');
 
-let quoteText = document.getElementById("quoteText");
-let textSize = document.getElementById("textSize");
-let textColor = document.getElementById("textColor");
-let outlineColor = document.getElementById("outlineColor");
-let outlineSize = document.getElementById("outlineSize");
-let overlayOpacity = document.getElementById("overlayOpacity");
-let textAlign = document.getElementById("textAlign");
-let backgroundColor = document.createElement("input");
+customFont.load().then((font) => document.fonts.add(font)).catch(() => {});
 
-backgroundColor.type = "color";
-backgroundColor.value = "transparent";
-backgroundColor.onchange = updateCanvas;
+// Store current text/settings when switching images
+let currentSettings = {
+  text: "",
+  textSize: "40",
+  textColor: "#ffffff",
+  outlineColor: "none",
+  outlineSize: "0",
+  textAlign: "center",
+  overlayOpacity: "0.5"
+};
 
-document.querySelector(".controls").appendChild(document.createTextNode("Background Color: "));
-document.querySelector(".controls").appendChild(backgroundColor);
-
-let cropModal = document.getElementById("cropModal");
-let cropperImage = document.getElementById("cropperImage");
-
-let recentImages = JSON.parse(localStorage.getItem("recentImages")) || [];
-let recentImagesContainer = document.createElement("div");
-recentImagesContainer.classList.add("recent-images");
-document.getElementById("imageSelect").appendChild(recentImagesContainer);
-
-function updateRecentImagesDisplay() {
-  recentImagesContainer.innerHTML = "";
-  if (recentImages.length > 0) {
-    recentImages.forEach((src, index) => {
-      let recentImage = document.createElement("div");
-      recentImage.className = "recent-image";
-      recentImage.innerHTML = `<img src="${src}" onclick="openEditor('${src}')"><button onclick="deleteRecentImage(${index})">X</button>`;
-      recentImagesContainer.appendChild(recentImage);
-    });
-  }
-}
-
-updateRecentImagesDisplay();
-
-document.getElementById("uploadImage").addEventListener("change", function(e) {
-  let file = e.target.files[0];
-  if (!file) return;
-
-  let reader = new FileReader();
-  reader.onload = function(evt) {
-    cropperImage.src = evt.target.result;
-    cropModal.style.display = "flex";
-    cropperImage.onload = function() {
-      if (cropper) cropper.destroy();
-      cropper = new Cropper(cropperImage, {
-        aspectRatio: 1,
-        viewMode: 1,
-        movable: true,
-        zoomable: true,
-        background: false,
-      });
-    };
-  };
-  reader.readAsDataURL(file);
+// Ensure images are clickable
+document.querySelectorAll(".image-item").forEach((image) => {
+  image.addEventListener("click", function() {
+    let src = this.getAttribute("src");
+    openEditor(src);
+  });
 });
 
-function cropAndUse() {
-  const canvasCrop = cropper.getCroppedCanvas({
-    width: 800,
-    height: 800,
-  });
-  img.src = canvasCrop.toDataURL("image/jpeg");
-  cropModal.style.display = "none";
-  document.getElementById("imageSelect").style.display = "none";
-  document.getElementById("editor").style.display = "flex";
-
-  recentImages.unshift(img.src);
-  if (recentImages.length > 5) recentImages.pop();
-  localStorage.setItem("recentImages", JSON.stringify(recentImages));
-  updateRecentImagesDisplay();
-
-  img.onload = updateCanvas;
-}
-
+// Open editor without resetting settings
 function openEditor(src) {
-  img.src = src;
   document.getElementById("imageSelect").style.display = "none";
   document.getElementById("editor").style.display = "flex";
-  img.onload = updateCanvas;
+  
+  img.src = src;
+  img.onload = () => updateCanvas();
+  
+  // Store ?editor in history without allowing direct access
+  history.pushState({ page: "editor" }, "", "?editor");
 }
 
+// Update canvas with stored settings
 function updateCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  if (backgroundColor.value !== "transparent") {
-    ctx.fillStyle = backgroundColor.value;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  }
-
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-  // Overlay
-  ctx.fillStyle = `rgba(0,0,0,${overlayOpacity.value})`;
+  
+  let overlayOpacity = document.getElementById("overlayOpacity").value || currentSettings.overlayOpacity;
+  ctx.fillStyle = `rgba(0, 0, 0, ${overlayOpacity})`;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  let text = document.getElementById("quoteText").value || currentSettings.text;
+  let size = document.getElementById("textSize").value || currentSettings.textSize;
+  let color = document.getElementById("textColor").value || currentSettings.textColor;
+  let outlineColor = document.getElementById("outlineColor").value || currentSettings.outlineColor;
+  let outlineSize = document.getElementById("outlineSize").value || currentSettings.outlineSize;
+  let textAlign = document.getElementById("textAlign").value || currentSettings.textAlign;
+  
+  ctx.font = `${size}px IGSans-R, Arial`;
+  ctx.fillStyle = color;
+  ctx.textAlign = textAlign;
+  
+  let x = textAlign === "left" ? 50 : textAlign === "right" ? canvas.width - 50 : canvas.width / 2;
+  wrapText(ctx, text, x, canvas.height / 2, 500, size * 1.2, outlineSize, outlineColor);
+}
 
-  // Text
-  let lines = quoteText.value.split("\n");
-  let size = parseInt(textSize.value);
-  ctx.font = `${size}px IGSans-R`;
-  ctx.fillStyle = textColor.value;
-  ctx.textAlign = textAlign.value;
-  ctx.textBaseline = "middle";
-
-  let y = canvas.height / 2 - (lines.length - 1) * size / 2;
-
-  lines.forEach(line => {
-    if (outlineColor.value !== "none" && outlineSize.value > 0) {
-      ctx.lineWidth = parseInt(outlineSize.value);
-      ctx.strokeStyle = outlineColor.value;
-      ctx.strokeText(line, canvas.width / 2, y);
+// Handle text wrapping with outline
+function wrapText(ctx, text, x, y, maxWidth, lineHeight, outlineSize, outlineColor) {
+  let lines = text.split("\n");
+  let wrappedLines = [];
+  
+  lines.forEach((line) => {
+    let words = line.split(" ");
+    let tempLine = "";
+    
+    words.forEach((word) => {
+      let testLine = tempLine + word + " ";
+      let metrics = ctx.measureText(testLine);
+      if (metrics.width > maxWidth && tempLine.length > 0) {
+        wrappedLines.push(tempLine.trim());
+        tempLine = word + " ";
+      } else {
+        tempLine = testLine;
+      }
+    });
+    
+    wrappedLines.push(tempLine.trim());
+  });
+  
+  let startY = y - ((wrappedLines.length - 1) * lineHeight) / 2;
+  wrappedLines.forEach((line, i) => {
+    let lineY = startY + i * lineHeight;
+    if (outlineSize > 0 && outlineColor !== "none") {
+      ctx.strokeStyle = outlineColor;
+      ctx.lineWidth = outlineSize;
+      ctx.strokeText(line, x, lineY);
     }
-    ctx.fillText(line, canvas.width / 2, y);
-    y += size;
+    ctx.fillText(line, x, lineY);
   });
 }
 
+// Download the generated image
 function downloadImage() {
   let link = document.createElement("a");
-  link.download = "quote.jpg";
-  link.href = canvas.toDataURL("image/jpeg", 0.95);
+  link.download = "quote.png";
+  link.href = canvas.toDataURL("image/png");
   link.click();
 }
 
+// Change image in editor without resetting settings
+function changeImage(src) {
+  img.src = src;
+  img.onload = () => updateCanvas();
+}
+
+// Save settings before resetting editor
 function resetEditor() {
   document.getElementById("editor").style.display = "none";
   document.getElementById("imageSelect").style.display = "block";
-  quoteText.value = "";
+  
+  // Store current settings before reset
+  currentSettings.text = document.getElementById("quoteText").value;
+  currentSettings.textSize = document.getElementById("textSize").value;
+  currentSettings.textColor = document.getElementById("textColor").value;
+  currentSettings.outlineColor = document.getElementById("outlineColor").value;
+  currentSettings.outlineSize = document.getElementById("outlineSize").value;
+  currentSettings.textAlign = document.getElementById("textAlign").value;
+  currentSettings.overlayOpacity = document.getElementById("overlayOpacity").value;
+  
+  // Remove ?editor from URL safely
+  history.pushState({ page: "home" }, "", window.location.pathname);
 }
 
-function deleteRecentImage(index) {
-  recentImages.splice(index, 1);
-  localStorage.setItem("recentImages", JSON.stringify(recentImages));
-  updateRecentImagesDisplay();
-}
+// Handle Android back button and browser back action
+window.addEventListener("popstate", function(event) {
+  if (event.state && event.state.page === "editor") {
+    openEditor(img.src); // Reopen editor without affecting layout
+  } else {
+    resetEditor(); // Go back to image selection properly
+  }
+});
