@@ -3,6 +3,9 @@ let ctx = canvas.getContext("2d");
 let img = new Image();
 let cropper;
 let uploadedImage = null;
+let originalWidth = 1080;
+let originalHeight = 1080;
+
 let currentSettings = {
   text: "",
   textSize: "40",
@@ -12,12 +15,6 @@ let currentSettings = {
   textAlign: "center",
   overlayOpacity: "0.5"
 };
-
-let customFont = new FontFace('IGSans-R', 'url(/assets/font/InstagramSans-Regular.ttf)');
-customFont.load().then(function(font) {
-  document.fonts.add(font);
-  updateCanvas();
-});
 
 document.getElementById("uploadImage").addEventListener("change", function(event) {
   let file = event.target.files[0];
@@ -45,6 +42,7 @@ function openCropper(imageSrc) {
 function cropImage() {
   let croppedCanvas = cropper.getCroppedCanvas();
   let croppedImage = croppedCanvas.toDataURL("image/png");
+  
   addRecentImage(croppedImage);
   closeCropper();
 }
@@ -56,12 +54,19 @@ function closeCropper() {
 function openEditor(src) {
   document.getElementById("imageSelect").style.display = "none";
   document.getElementById("editor").style.display = "flex";
+  
+  img = new Image();
   img.onload = () => {
-    canvas.width = img.width;
-    canvas.height = img.height;
+    originalWidth = img.width;
+    originalHeight = img.height;
+    
+    canvas.width = originalWidth;
+    canvas.height = originalHeight;
+    
     updateCanvas();
   };
   img.src = src;
+  
   history.pushState({ page: "editor" }, "", "?editor");
 }
 
@@ -74,19 +79,23 @@ function updateCanvas() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   
   let text = document.getElementById("quoteText").value || currentSettings.text;
-  let size = parseInt(document.getElementById("textSize").value || currentSettings.textSize);
+  let baseSize = parseInt(document.getElementById("textSize").value || currentSettings.textSize);
   let color = document.getElementById("textColor").value || currentSettings.textColor;
   let outlineColor = document.getElementById("outlineColor").value || currentSettings.outlineColor;
   let outlineSize = parseInt(document.getElementById("outlineSize").value || currentSettings.outlineSize);
   let textAlign = document.getElementById("textAlign").value || currentSettings.textAlign;
   
-  ctx.font = `${size}px IGSans-R, Arial`;
-  ctx.fillStyle = color;
-  ctx.textAlign = textAlign;
+  let scale = canvas.width / 1000; // scale based on 1000px baseline
+  let fontSize = baseSize * scale;
+  let lineHeight = fontSize * 1.2;
+  let maxWidth = canvas.width * 0.9;
   
-  let maxWidth = canvas.width * 0.8;
-  let x = textAlign === "left" ? canvas.width * 0.1 : textAlign === "right" ? canvas.width * 0.9 : canvas.width / 2;
-  wrapText(ctx, text, x, canvas.height / 2, maxWidth, size * 1.5, outlineSize, outlineColor);
+  ctx.textAlign = textAlign;
+  ctx.fillStyle = color;
+  ctx.font = `${fontSize}px IGSans-R`;
+  
+  let x = textAlign === "left" ? canvas.width * 0.05 : textAlign === "right" ? canvas.width * 0.95 : canvas.width / 2;
+  wrapText(ctx, text, x, canvas.height / 2, maxWidth, lineHeight, outlineSize * scale, outlineColor);
 }
 
 function wrapText(ctx, text, x, y, maxWidth, lineHeight, outlineSize, outlineColor) {
@@ -95,32 +104,32 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight, outlineSize, outlineCol
   
   lines.forEach(line => {
     let words = line.split(" ");
-    let tempLine = "";
+    let currentLine = "";
     
     words.forEach(word => {
-      let testLine = tempLine + word + " ";
-      let testWidth = ctx.measureText(testLine).width;
-      if (testWidth > maxWidth && tempLine.length > 0) {
-        wrappedLines.push(tempLine.trim());
-        tempLine = word + " ";
+      let testLine = currentLine + word + " ";
+      let width = ctx.measureText(testLine).width;
+      if (width > maxWidth && currentLine !== "") {
+        wrappedLines.push(currentLine.trim());
+        currentLine = word + " ";
       } else {
-        tempLine = testLine;
+        currentLine = testLine;
       }
     });
     
-    wrappedLines.push(tempLine.trim());
+    wrappedLines.push(currentLine.trim());
   });
   
   let startY = y - ((wrappedLines.length - 1) * lineHeight) / 2;
   
   wrappedLines.forEach((line, i) => {
-    let yPos = startY + i * lineHeight;
+    let posY = startY + i * lineHeight;
     if (outlineSize > 0 && outlineColor !== "none") {
-      ctx.lineWidth = outlineSize;
       ctx.strokeStyle = outlineColor;
-      ctx.strokeText(line, x, yPos);
+      ctx.lineWidth = outlineSize;
+      ctx.strokeText(line, x, posY);
     }
-    ctx.fillText(line, x, yPos);
+    ctx.fillText(line, x, posY);
   });
 }
 
@@ -145,21 +154,27 @@ window.addEventListener("popstate", function(event) {
   }
 });
 
-function checkRecentVisibility() {
-  let recent = document.getElementById("recentImages");
-  document.getElementById("recentTitle").style.display = recent.children.length > 0 ? "block" : "none";
+// LOCAL STORAGE HANDLING
+function saveRecentToLocalStorage() {
+  let images = Array.from(document.querySelectorAll("#recentImages img")).map(img => img.src);
+  localStorage.setItem("recentUploads", JSON.stringify(images));
+}
+
+function loadRecentFromLocalStorage() {
+  let images = JSON.parse(localStorage.getItem("recentUploads") || "[]");
+  images.forEach(src => addRecentImage(src));
 }
 
 function addRecentImage(src) {
-  let recent = document.getElementById("recentImages");
-  if ([...recent.querySelectorAll("img")].some(i => i.src === src)) return;
+  let recentContainer = document.getElementById("recentImages");
+  if ([...recentContainer.querySelectorAll("img")].some(i => i.src === src)) return;
   
   let imageDiv = document.createElement("div");
   imageDiv.classList.add("image-item");
   
-  let imgEl = document.createElement("img");
-  imgEl.src = src;
-  imgEl.onclick = () => openEditor(src);
+  let img = document.createElement("img");
+  img.src = src;
+  img.onclick = () => openEditor(src);
   
   let deleteBtn = document.createElement("div");
   deleteBtn.classList.add("delete-icon");
@@ -170,21 +185,17 @@ function addRecentImage(src) {
     checkRecentVisibility();
   };
   
-  imageDiv.appendChild(imgEl);
+  imageDiv.appendChild(img);
   imageDiv.appendChild(deleteBtn);
-  recent.appendChild(imageDiv);
-  saveRecentToLocalStorage();
+  recentContainer.appendChild(imageDiv);
   checkRecentVisibility();
+  saveRecentToLocalStorage();
 }
 
-function saveRecentToLocalStorage() {
-  let images = Array.from(document.querySelectorAll("#recentImages img")).map(img => img.src);
-  localStorage.setItem("recentUploads", JSON.stringify(images));
-}
-
-function loadRecentFromLocalStorage() {
-  let images = JSON.parse(localStorage.getItem("recentUploads") || "[]");
-  images.forEach(src => addRecentImage(src));
+function checkRecentVisibility() {
+  let recentContainer = document.getElementById("recentImages");
+  let recentTitle = document.getElementById("recentTitle");
+  recentTitle.style.display = recentContainer.children.length > 0 ? "block" : "none";
 }
 
 window.addEventListener("DOMContentLoaded", loadRecentFromLocalStorage);
