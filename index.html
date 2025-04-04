@@ -1,64 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quotes Creator</title>
-    <link rel="stylesheet" href="/assets/style/main.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quotes Creator</title>
+  <link rel="stylesheet" href="/assets/style/main.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css"/>
 </head>
 <body>
-<header>
-  <h1>Quotes Creator</h1>
-  <a class="link" href="https://GitHub.com/siddharthvishwamitra/quotesjs">GitHub</a>
-</header>
-<div class="apex-container">
+  <header>
+    <h1>Quotes Creator</h1>
+    <a class="link" href="https://GitHub.com/siddharthvishwamitra/quotesjs">GitHub</a>
+  </header>
+
+  <div class="apex-container">
     <div class="container">
-        <div id="imageSelect">
-            <h2>Select Image</h2>
-            <div class="image-options">
-                <img src="assets/images/1.jpg" onclick="openEditor(this.src)">
-                <img src="assets/images/2.jpg" onclick="openEditor(this.src)">
-                <img src="assets/images/3.jpg" onclick="openEditor(this.src)">
-            </div>
+      <div id="imageSelect">
+        <h2>Select Image</h2>
+        <input type="file" id="uploadImage" accept="image/*">
+        <div class="image-options">
+          <img src="assets/images/1.jpg" onclick="openEditor(this.src)">
+          <img src="assets/images/2.jpg" onclick="openEditor(this.src)">
+          <img src="assets/images/3.jpg" onclick="openEditor(this.src)">
+        </div>
+      </div>
+
+      <div id="editor" class="editor">
+        <canvas id="canvas" width="800" height="800"></canvas>
+        <textarea id="quoteText" placeholder="Enter quote" oninput="updateCanvas()"></textarea>
+
+        <div class="controls">
+          <label>Text Size: <input type="range" id="textSize" min="20" max="60" value="40" oninput="updateCanvas()"></label>
+          <label>Text Color: 
+            <select id="textColor" onchange="updateCanvas()">
+              <option value="#ffffff">White</option>
+              <option value="#000000">Black</option>
+            </select>
+          </label>
+          <label>Outline Color: 
+            <select id="outlineColor" onchange="updateCanvas()">
+              <option value="none">None</option>
+              <option value="#ffffff">White</option>
+              <option value="#000000">Black</option>
+            </select>
+          </label>
+          <label>Outline Size: <input type="range" id="outlineSize" min="0" max="5" value="0" oninput="updateCanvas()"></label>
+          <label>Overlay: <input type="range" id="overlayOpacity" min="0" max="1" step="0.1" value="0.3" oninput="updateCanvas()"></label>
+          <label>Alignment: 
+            <select id="textAlign" onchange="updateCanvas()">
+              <option value="center">Center</option>
+              <option value="left">Left</option>
+              <option value="right">Right</option>
+            </select>
+          </label>
         </div>
 
-        <div id="editor" class="editor">
-            <canvas id="canvas" width="800" height="800"></canvas>
-            <textarea id="quoteText" placeholder="Enter quote" oninput="updateCanvas()"></textarea>
-
-            <div class="controls">
-                <label>Text Size: <input type="range" id="textSize" min="20" max="60" value="40" oninput="updateCanvas()"></label>
-                <label>Text Color: 
-                    <select id="textColor" onchange="updateCanvas()">
-                        <option value="#ffffff">White</option>
-                        <option value="#000000">Black</option>
-                    </select>
-                </label>
-                <label>Outline Color: 
-                    <select id="outlineColor" onchange="updateCanvas()">
-                        <option value="none">None</option>
-                        <option value="#ffffff">White</option>
-                        <option value="#000000">Black</option>
-                    </select>
-                </label>
-                <label>Outline Size: <input type="range" id="outlineSize" min="0" max="5" value="0" oninput="updateCanvas()"></label>
-                <label>Overlay: <input type="range" id="overlayOpacity" min="0" max="1" step="0.1" value="0.3" oninput="updateCanvas()"></label>
-                <label>Alignment: 
-                    <select id="textAlign" onchange="updateCanvas()">
-                        <option value="center">Center</option>
-                        <option value="left">Left</option>
-                        <option value="right">Right</option>
-                    </select>
-                </label>
-            </div>
-
-            <div class="controls">
-                <button onclick="downloadImage()">Download</button>
-                <button onclick="resetEditor()">Change Image</button>
-            </div>
+        <div class="controls">
+          <button onclick="downloadImage()">Download</button>
+          <button onclick="resetEditor()">Change Image</button>
         </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Crop Modal -->
+  <div id="cropModal" class="modal">
+    <div class="modal-content">
+      <img id="cropperImage" />
+      <button onclick="cropAndUse()">Crop & Use</button>
     </div>
-    <script src="/assets/js/main.js"></script>
+  </div>
+
+  <script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
+  <script src="/assets/js/main.js"></script>
 </body>
 </html>
