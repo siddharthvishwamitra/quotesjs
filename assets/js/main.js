@@ -1,3 +1,10 @@
+/*!
+ * Quote Creator JS
+ * (c) 2025 Siddharth Kumar
+ * MIT License
+ * https://github.com/siddharthvishwamitra
+ */
+
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let img = new Image();
