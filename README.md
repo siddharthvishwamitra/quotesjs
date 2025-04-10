@@ -1,8 +1,6 @@
-# QuoteCreator JS
+# Quotes Creator JS
 
 **A clean, fully client-side quote image generator. No backend. No dependencies. Just custom CSS and vanilla JavaScript.**
-
-![Quote Creator Demo](https://quotecreator.pages.dev/screenshot.png) <!-- optional -->
 
 ## What It Does
 
