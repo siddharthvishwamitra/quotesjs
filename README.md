@@ -1,10 +1,8 @@
-# Quote Creator JS
+# QuoteCreator JS
 
 **A clean, fully client-side quote image generator. No backend. No dependencies. Just custom CSS and vanilla JavaScript.**
 
 ![Quote Creator Demo](https://quotecreator.pages.dev/screenshot.png) <!-- optional -->
-
----
 
 ## What It Does
 
@@ -32,8 +30,6 @@
   - Built with 100% custom CSS
   - Optimized for both desktop and mobile experience
 
----
-
 ## Tech Stack
 
 - **Vanilla JavaScript**
@@ -41,8 +37,6 @@
 - **HTML5 Canvas API**
 - **Cropper.js** for cropping (the only third-party dependency)
 - **IndexedDB** for saving uploaded images
-
----
 
 ## How to Use
 
@@ -61,25 +55,17 @@
 5. **Reuse Your Uploaded Images**  
    All uploaded images are saved locally and appear in the **Recent Images** section.
 
----
-
 ## Local Image Storage
 
 Uploaded images are cached using **IndexedDB**, so you don’t need to re-upload them each time. You can delete any of them from the UI when needed.
-
----
 
 ## Live Demo
 
 [**Try It Now**](https://quotecreator.pages.dev)
 
----
-
 ## License
 
 MIT License — free to use, modify, and share.
-
----
 
 ## Contributions
 
