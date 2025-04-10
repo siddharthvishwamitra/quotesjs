@@ -1,3 +1,10 @@
+/*!
+ * Quote Creator JS (Safety)
+ * (c) 2025 Siddharth Kumar
+ * MIT License
+ * https://github.com/siddharthvishwamitra
+ */
+
 class InteractionProtector {
   constructor(options = {}) {
     this.selector = options.selector || "body";
