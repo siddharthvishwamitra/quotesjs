@@ -151,7 +151,7 @@ function updateCanvas() {
   
   ctx.textAlign = textAlign;
   ctx.fillStyle = color;
-  ctx.font = `${fontSize}px IGSans-R`;
+  ctx.font = `${fontSize}px Geist`;
   
   let x = textAlign === "left" ? canvas.width * 0.05 : textAlign === "right" ? canvas.width * 0.95 : canvas.width / 2;
   wrapText(ctx, text, x, canvas.height / 2, maxWidth, lineHeight, outlineSize * scale, outlineColor);
