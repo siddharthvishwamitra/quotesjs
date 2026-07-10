@@ -4,89 +4,176 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quotes Creator</title>
-    <link rel="stylesheet" href="/assets/style/main.css">
-    <link rel="stylesheet" href="/assets/style/cropper.min.css">
+    <link rel="stylesheet" href="assets/style/main.css">
+    <link rel="stylesheet" href="assets/style/cropper.min.css">
 </head>
 <body>
-<noscript><style>.apex-container{display: none;}</style><div class="no-js-message">JavaScript is disabled in your browser. Please enable it to use this site properly.</div></noscript>
+<noscript>
+    <style>.apex-container{display: none;}</style>
+    <div class="no-js-message">JavaScript is disabled. Please enable it to use this site.</div>
+</noscript>
+
 <header>
-<a href="javascript:void(0)" onclick="goHome()"><h1>Quotes Creator</h1></a>
-  <a class="link" href="https://GitHub.com/siddharthvishwamitra/quotesjs">GitHub</a>
+    <a href="javascript:void(0)" onclick="goHome()"><h1>Quotes Creator</h1></a>
+    <a class="link" href="https://GitHub.com/siddharthvishwamitra/quotesjs">GitHub</a>
 </header>
+
 <div class="apex-container">
     <div class="container">
+        
         <div id="imageSelect">
-          <label for="uploadImage" class="custom-file-upload">Upload Image</label>
-            <input type="file" id="uploadImage" accept="image/*">
-          <h3 class="premade-img-title">Default Images</h3>
-            <div class="image-options" id="defaultImages">
-                <img src="assets/images/1.jpg" onclick="openEditor(this.src)">
-                <img src="assets/images/2.jpg" onclick="openEditor(this.src)">
-                <img src="assets/images/3.jpg" onclick="openEditor(this.src)">
-                <img src="assets/images/4.jpg" onclick="openEditor(this.src)">
-                <img src="assets/images/5.jpg" onclick="openEditor(this.src)">
-                <img src="assets/images/6.jpg" onclick="openEditor(this.src)">
+            <label for="uploadImage" class="custom-file-upload">Upload Image</label>
+            <input type="file" id="uploadImage" accept="image/*" onclick="this.value=null">
+            
+            <h3 class="premade-img-title">Default Templates</h3>
+            <div class="tabs-wrapper">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="openTab(event, 'ratio-1-1')">1:1 Square</button>
+                    <button class="tab-btn" onclick="openTab(event, 'ratio-9-16')">9:16 Story</button>
+                    <button class="tab-btn" onclick="openTab(event, 'ratio-16-9')">16:9 Banner</button>
+                    <button class="tab-btn" onclick="openTab(event, 'ratio-3-4')">3:4 Portrait</button>
+                </div>
+                <div id="ratio-1-1" class="tab-content active">
+                    <div class="image-options">
+                        <img src="assets/images/1.jpg" onclick="loadTemplate(this.src, 1, 1080, 1080)">
+                        <img src="assets/images/2.jpg" onclick="loadTemplate(this.src, 1, 1080, 1080)">
+                    </div>
+                </div>
+                <div id="ratio-9-16" class="tab-content">
+                    <div class="image-options">
+                        <img src="assets/images/3.jpg" onclick="loadTemplate(this.src, 9/16, 1080, 1920)">
+                    </div>
+                </div>
+                <div id="ratio-16-9" class="tab-content">
+                    <div class="image-options">
+                        <img src="assets/images/4.jpg" onclick="loadTemplate(this.src, 16/9, 1920, 1080)">
+                    </div>
+                </div>
+                <div id="ratio-3-4" class="tab-content">
+                    <div class="image-options">
+                        <img src="assets/images/5.jpg" onclick="loadTemplate(this.src, 3/4, 1080, 1440)">
+                        <img src="assets/images/6.jpg" onclick="loadTemplate(this.src, 3/4, 1080, 1440)">
+                    </div>
+                </div>
             </div>
-            <h3 id="recentTitle" class="recent-img-title">Your Images</h3>
+            
+            <h3 id="recentTitle" class="recent-img-title" style="display: none;">Your Cropped Vault</h3>
             <div class="image-options" id="recentImages"></div>
         </div>
 
-        <div id="editor" class="editor">
-            <canvas id="canvas" width="800" height="800"></canvas>
-            <textarea id="quoteText" placeholder="Enter quote" oninput="updateCanvas()"></textarea>
-
-            <div class="controls">
-                <label>Text Size: <input type="range" id="textSize" min="20" max="60" value="40" oninput="updateCanvas()"></label>
-                <label>Text Color: 
-                    <select id="textColor" onchange="updateCanvas()">
-                        <option value="#ffffff">White</option>
-                        <option value="#000000">Black</option>
-                    </select>
-                </label>
-                <label>Outline Color: 
-                    <select id="outlineColor" onchange="updateCanvas()">
-                        <option value="none">None</option>
-                        <option value="#ffffff">White</option>
-                        <option value="#000000">Black</option>
-                    </select>
-                </label>
-                <label>Outline Size: <input type="range" id="outlineSize" min="0" max="5" value="0" oninput="updateCanvas()"></label>
-                <label>Overlay: <input type="range" id="overlayOpacity" min="0" max="1" step="0.1" value="0.3" oninput="updateCanvas()"></label>
-                <label>Alignment: 
-                    <select id="textAlign" onchange="updateCanvas()">
-                        <option value="center">Center</option>
-                        <option value="left">Left</option>
-                        <option value="right">Right</option>
-                    </select>
-                </label>
+        <div id="ratioSelectContainer" style="display: none;">
+            <h2 class="section-title">Select Canvas Layout</h2>
+            <div class="ratio-grid">
+                <div class="ratio-card" onclick="setRatioAndProceed(1, 1080, 1080)">
+                    <div class="ratio-preview square"></div>
+                    <span>1:1 Square</span>
+                </div>
+                <div class="ratio-card" onclick="setRatioAndProceed(9/16, 1080, 1920)">
+                    <div class="ratio-preview portrait"></div>
+                    <span>9:16 Story</span>
+                </div>
+                <div class="ratio-card" onclick="setRatioAndProceed(16/9, 1920, 1080)">
+                    <div class="ratio-preview landscape"></div>
+                    <span>16:9 Banner</span>
+                </div>
+                <div class="ratio-card" onclick="setRatioAndProceed(3/4, 1080, 1440)">
+                    <div class="ratio-preview standard"></div>
+                    <span>3:4 Portrait</span>
+                </div>
             </div>
+            <button class="btn-secondary" onclick="resetEditor()">Back to Gallery</button>
+        </div>
 
-            <div class="controls">
-                <button onclick="downloadImage()">Download</button>
-                <button onclick="resetEditor()">Change Image</button>
+        <div id="editor" class="editor-split-layout">
+            <div class="preview-panel">
+                <div class="canvas-wrapper">
+                    <canvas id="canvas"></canvas>
+                </div>
             </div>
+            
+            <div class="control-panel">
+                <textarea id="quoteText" placeholder="Write your powerful statement here..." oninput="updateCanvas()"></textarea>
+                <input type="text" id="authorText" class="author-input" placeholder="- Author Name (Optional)" oninput="updateCanvas()">
+
+                <div class="controls-grid">
+                    <label>Font Family:
+                        <div class="custom-color-trigger" onclick="openModalPicker('fontFamily')">
+                            <span id="fontFamilyLabel" class="flex-grow-label">Geist (Modern)</span>
+                        </div>
+                    </label>
+                    <label>Alignment: 
+                        <div class="custom-color-trigger" onclick="openModalPicker('textAlign')">
+                            <span id="textAlignLabel" class="flex-grow-label">Center</span>
+                        </div>
+                    </label>
+
+                    <label>Text Size: <input type="range" id="textSize" min="20" max="120" value="50" oninput="updateCanvas()"></label>
+                    <label>Vertical Position: <input type="range" id="textYPosition" min="5" max="95" value="50" oninput="updateCanvas()"></label>
+                    
+                    <label class="full-width-mobile-row">Line Spacing: <input type="range" id="lineSpacing" min="1" max="2" step="0.05" value="1.35" oninput="updateCanvas()"></label>
+
+                    <label>Text Color: 
+                        <div class="custom-color-trigger" onclick="openModalPicker('textColor')">
+                            <span class="color-preview-blob" id="textColorBlob"></span> Select Color
+                        </div>
+                    </label>
+                    <label>Outline Color: 
+                        <div class="custom-color-trigger" onclick="openModalPicker('outlineColor')">
+                            <span class="color-preview-blob" id="outlineColorBlob" style="background: transparent; border: 1px dashed #666;"></span> <span id="outlineColorLabel">None</span>
+                        </div>
+                    </label>
+
+                    <label class="full-width-mobile-row">Outline Width: <input type="range" id="outlineSize" min="0" max="10" value="0" oninput="updateCanvas()"></label>
+
+                    <label>Overlay Tint: 
+                        <div class="custom-color-trigger" onclick="openModalPicker('overlayColor')">
+                            <span class="color-preview-blob" id="overlayColorBlob"></span> Select Tint
+                        </div>
+                    </label>
+                    <label>Tint Opacity: <input type="range" id="overlayOpacity" min="0" max="1" step="0.05" value="0.4" oninput="updateCanvas()"></label>
+                    
+                    <div class="toggle-row-wrapper">
+                        <button id="btnBold" class="toggle-btn" onclick="toggleStyle('bold')">B</button>
+                        <button id="btnItalic" class="toggle-btn" onclick="toggleStyle('italic')">I</button>
+                        <button id="btnShadow" class="toggle-btn" onclick="toggleStyle('shadow')">Shadow</button>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button onclick="downloadImage()">Export High-Res</button>
+                    <button class="btn-secondary" onclick="resetEditor()">Change Image</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="customModalWindow" class="custom-modal-overlay" style="display: none;">
+    <div class="custom-modal-content">
+        <h3 id="customModalTitle">Select Option</h3>
+        <div class="modal-body-content" id="customModalBody"></div>
+        <div class="custom-modal-footer">
+            <button class="btn-secondary close-modal-btn" onclick="closeCustomModal()">Close</button>
         </div>
     </div>
 </div>
 
 <div id="cropContainer" style="display: none;">
     <div id="cropBox">
-        <img id="cropImage">
+        <div class="crop-image-wrapper">
+            <img id="cropImage">
+        </div>
         <div class="button-row">
-        <button onclick="cropImage()">Crop</button>
-        <button onclick="closeCropper()">Cancel</button>
+            <button onclick="cropImage()">Finalize Crop</button>
+            <button class="btn-secondary" onclick="closeCropper()">Cancel</button>
         </div>
     </div>
 </div>
 
-<script src="/assets/js/cropper.min.js"></script>
-<script src="/assets/js/main.js"></script>
+<script src="assets/js/cropper.min.js"></script>
+<script src="assets/js/main.js"></script>
 <script>
-function goHome() {
-  if (window.location.pathname !== "/" || window.location.search) {
-    window.location.replace("/");
-  }
-}
+function goHome() { if (window.location.pathname !== "/" || window.location.search) { window.location.replace("/"); } }
 </script>
 <script src="assets/js/safety.js"></script>
 </body>
