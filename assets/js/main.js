@@ -23,7 +23,7 @@ let activeSettings = {
   overlayColor: "#000000",
   outlineColor: "none", 
   fontFamily: "Geist",
-  fontFamilyName: "Geist (Modern)",
+  fontFamilyName: "Geist",
   textAlign: "center"
 };
 
