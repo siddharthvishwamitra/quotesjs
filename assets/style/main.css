@@ -12,7 +12,13 @@
   src: url('/assets/font/InstagramSans-Regular.ttf') format('truetype');
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: "Geist", sans-serif; -webkit-tap-highlight-color: transparent; }
+::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: "Geist", sans-serif; -webkit-tap-highlight-color: transparent; scrollbar-width: none; -ms-overflow-style: none;}
 body { background-color: #0d0d0d; color: #e5e5e5; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 a { text-decoration: none; color: #ffffff; }
 
@@ -33,7 +39,7 @@ input[type="file"] { display: none; }
 /* Image Options & Vault */
 .image-options { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-bottom: 20px; }
 .image-options > img { height: 130px; width: auto; border-radius: 10px; border: 1px solid #262626; cursor: pointer; transition: transform 0.2s, border-color 0.2s; display: block; }
-.image-options > img:hover { transform: translateY(-3px); border-color: #3b82f6; }
+.image-options > img:hover { transform: translateY(-3px); }
 
 .image-item { position: relative; display: inline-block; height: 130px; border-radius: 10px; transition: transform 0.2s; }
 .image-item:hover { transform: translateY(-3px); }
